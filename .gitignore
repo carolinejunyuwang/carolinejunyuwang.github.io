@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Large source media — kept locally / in Dropbox, NOT deployed to the web.
+# (The web-ready drone1-3.mp4 and sunrise*.jpg in files/ ARE committed.)
+files/originals/
+
+# Style mockups — reference only, not part of the live site
+mockups/
