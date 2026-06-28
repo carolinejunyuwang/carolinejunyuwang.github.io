@@ -7,3 +7,6 @@ files/originals/
 
 # Style mockups — reference only, not part of the live site
 mockups/
+
+# Unused alternate headshot — kept locally, not deployed
+files/headshot2.png
