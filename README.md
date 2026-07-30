@@ -1,51 +1,65 @@
 # Caroline Wang — Personal Academic Website
 
-A single-file, dependency-free site (`index.html`) in the **refined-serif** style.
-Fonts load from Google Fonts; everything else is self-contained. Free to host.
+A dependency-free static site in the **refined-serif** style: three hand-written HTML
+pages, no generator, no build step. Fonts load from Google Fonts; everything else is
+self-contained. Free to host.
 
 ## Files
 ```
 website/
-├── index.html        ← the site (edit text/links here)
+├── index.html        ← landing page (edit text/links here)
+├── research.html     ← papers + abstracts (currently noindex)
+├── hobbies.html      ← photos/videos
+├── styles.css        ← shared styles for all three pages
+├── robots.txt, sitemap.xml
 ├── files/
-│   └── cv.pdf         ← stable link target; auto-generated, do not hand-edit
-├── update-cv.sh       ← recompiles ../cv/cv_caroline.tex → files/cv.pdf
-├── mockups/           ← the two style mockups (reference only; safe to delete)
+│   ├── cv_caroline.pdf   ← the served CV; copied in from ../cv/, do not hand-edit
+│   ├── headshot.jpg
+│   └── sunrise*.jpg, drone*.mp4
+├── mockups/          ← the two style mockups (reference only; gitignored)
 └── README.md
 ```
 
 ## Keeping the CV in sync
-Your CV's source of truth stays at `../cv/cv_caroline.tex`. The website links to the
-**stable path** `files/cv.pdf`, so the link on the site never changes. After editing the CV:
+The CV's source of truth is `../cv/cv_caroline.tex`. The site links to the **stable path**
+`files/cv_caroline.pdf` from the nav on all three pages, so the public link never changes.
+Updating it is a deliberate two-step manual process — recompile, then copy:
+
+```bash
+cd package/cv
+xelatex cv_caroline.tex && xelatex cv_caroline.tex   # twice: longtable + hyperref refs
+cp cv_caroline.pdf ../website/files/cv_caroline.pdf
+```
+
+`xelatex` (not `pdflatex`) is required — the header icons come from `fontawesome5`.
+Check the compile log for `Missing character` warnings: the document uses `lmodern`, whose
+`ec-lmr10` font has no Unicode em dash (U+2014), so a pasted `—` is **silently dropped**
+and jams the surrounding words together. Always write `---` instead.
+
+Then commit and push to redeploy (see below).
+
+Note: the abstracts in the CV and the text on `research.html` are kept in sync by hand —
+when you change one, check the other.
+
+## Deploy (GitHub Pages)
+This folder **is** the repo root of `carolinejunyuwang/carolinejunyuwang.github.io`.
+Pages serves the `main` branch root directly, so a push is the deploy:
 
 ```bash
 cd package/website
-./update-cv.sh        # recompiles the .tex and copies the fresh PDF to files/cv.pdf
+git add -A && git commit -m "..." && git push origin main
 ```
 
-Then redeploy (see below). The "CV" nav link and the "Curriculum Vitae" button both point to `files/cv.pdf`.
+The live site is `https://carolinejunyuwang.github.io/` and updates within a minute or two.
+There is no CI workflow — nothing builds, the files are served as-is.
 
-## To finish before going live
-- [ ] **Headshot.** Drop a photo at `files/headshot.jpg`, then in `index.html` replace
-      `<div class="photo">Your<br>headshot</div>` with
-      `<img class="photo" src="files/headshot.jpg" alt="Caroline Wang">`.
-- [ ] **Real links.** Fill in the `href="#"` placeholders: JMP PDF/slides, working-paper PDFs,
-      the HBR article URL, your Google Scholar profile, and LinkedIn.
-- [ ] **Confirm JMP authorship** ("with Anocha Aribarg" vs. solo) so the site, CV, and
-      research statement agree.
-
-## Deploy for free (GitHub Pages)
-1. Create a public repo named `carolinewang.github.io` (use your GitHub username).
-2. Put the contents of this `website/` folder at the repo root (so `index.html` is at the top).
-3. Push. In **Settings → Pages**, set the source to the `main` branch, root. Your site is live at
-   `https://<username>.github.io/` within a minute or two.
-4. *(Optional, ~$12/yr)* Add a custom domain (e.g. `carolinejwang.com`): buy it (Cloudflare /
-   Porkbun / Namecheap), add a `CNAME` file with the domain, set DNS records, and verify the
-   domain in GitHub to prevent takeover.
-
-Alternatives that are equally free: **Netlify** (drag-and-drop the folder) or **Quarto Pub**.
+*(Optional, ~$12/yr)* Add a custom domain: buy it (Cloudflare / Porkbun / Namecheap), add a
+`CNAME` file with the domain, set DNS records, and verify the domain in GitHub to prevent
+takeover.
 
 ## Get found by search / Scholar
-- The `<title>` and meta description are already set for "Caroline Wang — Quantitative Marketing, Kellogg."
-- Create/clean your **Google Scholar** profile and link it.
-- After deploying, submit the URL to **Google Search Console** to index in days, not months.
+- `<title>` and meta description are set for "Caroline Wang — Quantitative Marketing, Kellogg."
+- `index.html` carries the Google Search Console verification tag, a canonical link, and
+  JSON-LD `Person` schema.
+- `research.html` is currently `noindex`; `sitemap.xml` lists only `/` and `/hobbies.html`.
+- Keep the **Google Scholar** profile clean and linked.
