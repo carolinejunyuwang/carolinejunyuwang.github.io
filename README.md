@@ -21,15 +21,19 @@ website/
 ```
 
 ## Keeping the CV in sync
-The CV's source of truth is `../cv/cv_caroline.tex`. The site links to the **stable path**
-`files/cv_caroline.pdf` from the nav on all three pages, so the public link never changes.
-Updating it is a deliberate two-step manual process — recompile, then copy:
+The CV's source of truth is `../cv/cv_caroline_wang.tex`. The site links to the **stable path**
+`files/cv_caroline.pdf` from the nav on all three pages, so the public link never changes —
+note the served filename deliberately differs from the source filename. Updating it is a
+deliberate two-step manual process — recompile, then copy:
 
 ```bash
 cd package/cv
-xelatex cv_caroline.tex && xelatex cv_caroline.tex   # twice: longtable + hyperref refs
-cp cv_caroline.pdf ../website/files/cv_caroline.pdf
+xelatex cv_caroline_wang.tex && xelatex cv_caroline_wang.tex   # twice: longtable + hyperref refs
+cp cv_caroline_wang.pdf ../website/files/cv_caroline.pdf
 ```
+
+The footer date is **not** taken from the compile date — it is set by `\cvdate` in the
+preamble, so recompiling never silently changes it. Update it by hand when you re-date the CV.
 
 `xelatex` (not `pdflatex`) is required — the header icons come from `fontawesome5`.
 Check the compile log for `Missing character` warnings: the document uses `lmodern`, whose
